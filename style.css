@@ -1,5 +1,60 @@
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background-color: #1F6E8C;
+}
+
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    padding-top: 5vh;
+    padding-bottom: 5vh;
+    justify-content: space-around;
+    background-color: #0E2954;
+}
+
+#pageHead {
+    font-size: 45px;
+    background-color: #2E8A99;
+    margin-right: 48vw;
+    padding: 25px 45px 25px 45px;
+    border: 2px solid black;
+    color: #060047;
+    border-radius: 35px;
+}
+
+.search {
+    font-size: 25px;
+    height: 45px;
+    padding: 15px;
+    margin-top: 25px;
+    background-color: #84A7A1;
+    border-radius: 15px;
+}
+
+#search::placeholder {
+    color: #1F6E8C;
+}
+
+button {
+    width: 50px;
+    height: 45px;
+    margin-top: 25px;
+    background-color: #2E8A99;
+    border-radius: 5px;
+}
+
+.currentDay {
+    background-color: #2E8A99;
+    width: fit-content;
+    padding: 50px;
+    border: 1px solid #060047;
+    border-radius: 20px;
+    margin: auto;
+    margin-top: 45px;
 }
