@@ -1,3 +1,14 @@
+:root{
+    --color1:#8fbc8f;
+    --color2:#ffebcd;
+    --color3:#008080;
+    --color4:white;
+    --color5:white;
+    --color6:white;
+    --color7:white;
+    --color8:white;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -6,7 +17,7 @@
 }
 
 body {
-    background-color: #1F6E8C;
+    background-color: var(--color1);
 }
 
 nav {
@@ -15,16 +26,16 @@ nav {
     padding-top: 5vh;
     padding-bottom: 5vh;
     justify-content: space-around;
-    background-color: #0E2954;
+    background-color: var(--color2);
 }
 
 #pageHead {
     font-size: 45px;
-    background-color: #2E8A99;
-    margin-right: 48vw;
+    background-color: var(--color3);
+    margin-right: 45vw;
     padding: 25px 45px 25px 45px;
-    border: 2px solid black;
-    color: #060047;
+    border: 2px solid var(--color7);
+    color: var(--color5);
     border-radius: 35px;
 }
 
@@ -33,28 +44,32 @@ nav {
     height: 45px;
     padding: 15px;
     margin-top: 25px;
-    background-color: #84A7A1;
+    background-color: var(--color4);
     border-radius: 15px;
 }
 
 #search::placeholder {
-    color: #1F6E8C;
+    color: var(--color1);
 }
 
 button {
     width: 50px;
     height: 45px;
     margin-top: 25px;
-    background-color: #2E8A99;
+    background-color: var(--color3);
     border-radius: 5px;
 }
 
 .currentDay {
-    background-color: #2E8A99;
-    width: fit-content;
+    background-color: var(--color3);
+    width: 570px;
     padding: 50px;
-    border: 1px solid #060047;
+    border: 1px solid var(--color5);
     border-radius: 20px;
     margin: auto;
     margin-top: 45px;
+    font-size: 32px;
+    color: var(--color8);
+    margin-bottom: 20px;
 }
+
