@@ -1,59 +1,85 @@
-const apiKey = 'aed665453c27a5f70380c4ed539caae8';
+const weatherApiKey = "aed665453c27a5f70380c4ed539caae8";
+const timezoneApiKey = "RZOE6Z1ETE2M";
+const defaultCity = "East Lindsey District";
 let workingInCity = "";
 let currentCity = "";
-let currentData = "";
 
 async function fetchWeather(city) {
-    return await new Promise((resolve, reject) => {
-        let apiUrl = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
-        fetch(apiUrl)
-            .then((response) => response.json())
-            .then((data) => {
-                if (data.Error) {
-                    reject("City not found");
-                } else {
-                    resolve(data);
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    });
+    try {
+        const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${weatherApiKey}&units=metric`;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        if (data.cod > 400) {
+            loadAnimation(false);
+            throw new Error("City not found");
+        } else {
+            return data;
+        }
+    } catch (error) {
+        loadAnimation(false);
+        document.querySelector(".currentDay").textContent = `Failed to get weather details, please try again.`;
+        setCustomEventListeners(true);
+    }
 }
 
-function triggerForLocation(event) {
+async function triggerForLocation(event) {
+    setCustomEventListeners(false);
     loadAnimation(true);
-    let textInputCity = document.querySelector(".search").value;
     let triggeredBy = this.id;
-    if (event === "Kathmandu") {
-        currentCity = event;
+    if (event === defaultCity) {
+            workingInCity = event;
     } else if (triggeredBy === "searchIcon" || event.target.classList[0] === "search") {
+        let textInputCity = document.querySelector(".search").value;
         if (textInputCity === "") {
             alert("City name not found");
+            loadAnimation(false);
+            setCustomEventListeners(true);
             return;
-        }
-        currentCity = textInputCity;
+            }
+        workingInCity = textInputCity;
     } else if (triggeredBy === "currentLocation") {
-        getCurrentLocation();
+        if (currentCity == ""){
+            await getCurrentLocation();
+        }else{
+            workingInCity = currentCity;
+        }
     }
     setTimeout(async () => {
-        setWeather(currentCity, await fetchWeather(currentCity));
-    }, 650);
+        if (triggeredBy == "currentLocation" && currentCity == "") {
+            setCustomEventListeners(true);
+            return
+        }else{
+                parseData(workingInCity, await fetchWeather(workingInCity));
+        } 
+    }, 2000);  
+}
+
+
+function setCustomEventListeners(isTrue){
+    if (isTrue){
+        document.querySelector("#searchIcon").addEventListener("click", triggerForLocation);
+        document.querySelector("#currentLocation").addEventListener("click", triggerForLocation);
+    }else{
+        document.querySelector("#searchIcon").removeEventListener("click", triggerForLocation);
+        document.querySelector("#currentLocation").removeEventListener("click", triggerForLocation);
+    }
 }
 
 
 function pageBegin() {
-    let buttonClasses = ["#searchIcon", "#currentLocation"];
     document.getElementById("pageHead").textContent = "WeatherApp";
-    buttonClasses.forEach(button => { document.querySelector(button).addEventListener("click", triggerForLocation); });
-    document.querySelector("#searchIcon").addEventListener("click", triggerForLocation);
-    document.querySelector("#currentLocation").addEventListener("click", triggerForLocation);
-    document.querySelector(".search").addEventListener("keypress", function (event) {
+    setCustomEventListeners(true);
+    let timeoutId;
+    document.querySelector(".search").addEventListener("keyup", function (event) {
+        clearTimeout(timeoutId);
+
         if (event.key === "Enter") {
-            triggerForLocation(event);
+            timeoutId = setTimeout(function () {
+                triggerForLocation(event);
+            }, 500);
         }
     });
-    triggerForLocation("Kathmandu");
+    triggerForLocation(defaultCity);
 }
 
 pageBegin();
