@@ -4,6 +4,23 @@ const defaultCity = "East Lindsey District";
 let workingInCity = "";
 let currentCity = "";
 
+function loadAnimation(isLoad) {
+    if (isLoad) {
+        let dots = "";
+        startLoading = setInterval(() => {
+            if (dots.length === 4) {
+                dots = "";
+            } 
+            dots += ".";
+            const div = document.querySelector(".currentDay");
+            div.innerHTML = 'Loading' + dots;
+        }, 500);
+        return startLoading;
+    } else {
+        clearInterval(startLoading);
+    }
+}
+
 async function fetchWeather(city) {
     try {
         const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${weatherApiKey}&units=metric`;
