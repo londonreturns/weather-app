@@ -21,6 +21,16 @@ function loadAnimation(isLoad) {
     }
 }
 
+async function getTimezoneFromLocation(lat, lon) {
+    const apiUrl = `https://api.timezonedb.com/v2.1/get-time-zone?key=${timezoneApiKey}&by=position&lat=${lat}&lng=${lon}&format=json`;
+    const response = await fetch(apiUrl);
+    const data = await response.json();
+    if (data.Error) {
+        throw new Error("City not found");
+    }
+    return data;
+}
+
 async function fetchWeather(city) {
     try {
         const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${weatherApiKey}&units=metric`;
