@@ -49,6 +49,26 @@ async function fetchWeather(city) {
     }
 }
 
+
+async function getCurrentLocation() {
+    if (navigator.geolocation) {
+        try {
+            const position = await new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(resolve, reject);
+            });
+            loadAnimation(false);
+            resolveLocation(position);
+        } catch (error) {   
+            document.querySelector(".currentDay").textContent = "Some error occured, please try again."
+            loadAnimation(false);
+            rejectLocation();
+        }
+    } else {
+        document.querySelector(".currentDay").textContent = "Geolocation not available.";
+    }
+}
+
+
 async function triggerForLocation(event) {
     setCustomEventListeners(false);
     loadAnimation(true);
