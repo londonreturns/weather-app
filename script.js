@@ -49,6 +49,15 @@ async function fetchWeather(city) {
     }
 }
 
+const resolveLocation = position => {
+    getCityFromLatLong(position.coords.latitude, position.coords.longitude);
+}
+
+const rejectLocation = () => {
+    const currentWeather = document.querySelector(".currentDay");
+    currentWeather.textContent = "Browser failed to get location. Please give location access.";
+    loadAnimation(false);
+}
 
 async function getCurrentLocation() {
     if (navigator.geolocation) {
