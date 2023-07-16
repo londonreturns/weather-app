@@ -49,6 +49,20 @@ async function fetchWeather(city) {
     }
 }
 
+async function getCityFromLatLong(lat, long) {
+    try{
+        const response = await fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${long}&units=metric&appid=${weatherApiKey}`)
+        const data = await response.json();
+        currentCity = data[0].name;
+        if (currentCity.includes("Municipality")) {
+            currentCity = currentCity.slice(0, -13);
+        }
+        workingInCity = currentCity;
+    }catch(error) {
+        currentWeather.textContent = "Failed to get weather details, please try again.";
+        };
+}
+
 const resolveLocation = position => {
     getCityFromLatLong(position.coords.latitude, position.coords.longitude);
 }
