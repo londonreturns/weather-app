@@ -31,6 +31,32 @@ async function getTimezoneFromLocation(lat, lon) {
     return data;
 }
 
+function setColor(temp){
+    if (temp >= 30){
+        document.documentElement.style.setProperty("--color1", "#411530"); 
+        document.documentElement.style.setProperty("--color2", "#E95C63");
+        document.documentElement.style.setProperty("--color3", "#C74B50"); 
+        document.documentElement.style.setProperty("--color4", "#FFEE63");
+        document.documentElement.style.setProperty("--color8", "#FFFFFF");
+        document.documentElement.style.setProperty("--color9", "#000000");
+
+    }else if (temp >= 10){
+        document.documentElement.style.setProperty("--color1", "#2A2F4F");
+        document.documentElement.style.setProperty("--color2", "#E5BEEC");
+        document.documentElement.style.setProperty("--color3", "#917FB3");
+        document.documentElement.style.setProperty("--color4", "#FDE2F3");
+        document.documentElement.style.setProperty("--color8", "#FFFFFF");
+        document.documentElement.style.setProperty("--color9", "#000000");
+    } else {
+        document.documentElement.style.setProperty("--color1", "#1F6E8C");
+        document.documentElement.style.setProperty("--color2", "#0E2954");
+        document.documentElement.style.setProperty("--color3", "#2E8A99");
+        document.documentElement.style.setProperty("--color4", "#84A7A1");
+        document.documentElement.style.setProperty("--color8", "#FFFFFF");
+        document.documentElement.style.setProperty("--color9", "#000000");
+    }
+}
+
 async function parseData(city, data) {
     let cityCountry = ``;
     let currentWeather = document.querySelector(".currentDay");
