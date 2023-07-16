@@ -1,10 +1,13 @@
+// Initializing and declaring variables / constants
 const weatherApiKey = "aed665453c27a5f70380c4ed539caae8";
 const timezoneApiKey = "RZOE6Z1ETE2M";
 const defaultCity = "East Lindsey District";
 let workingInCity = "";
 let currentCity = "";
 
+// This function displays animation or stops
 function loadAnimation(isLoad) {
+    // if true start animation
     if (isLoad) {
         let dots = "";
         startLoading = setInterval(() => {
@@ -17,20 +20,24 @@ function loadAnimation(isLoad) {
         }, 500);
         return startLoading;
     } else {
+        // if false end animation
         clearInterval(startLoading);
     }
 }
 
+// The function returns timezone from position using timezoneDB api
 async function getTimezoneFromLocation(lat, lon) {
     const apiUrl = `https://api.timezonedb.com/v2.1/get-time-zone?key=${timezoneApiKey}&by=position&lat=${lat}&lng=${lon}&format=json`;
     const response = await fetch(apiUrl);
     const data = await response.json();
+    // if place not found
     if (data.Error) {
-        throw new Error("City not found");
+        return data;
     }
     return data;
 }
 
+// This function changes the color of ui according to the temperature
 function setColor(temp){
     if (temp >= 30){
         document.documentElement.style.setProperty("--color1", "#411530"); 
@@ -39,7 +46,6 @@ function setColor(temp){
         document.documentElement.style.setProperty("--color4", "#FFEE63");
         document.documentElement.style.setProperty("--color8", "#FFFFFF");
         document.documentElement.style.setProperty("--color9", "#000000");
-
     }else if (temp >= 10){
         document.documentElement.style.setProperty("--color1", "#2A2F4F");
         document.documentElement.style.setProperty("--color2", "#E5BEEC");
@@ -57,6 +63,7 @@ function setColor(temp){
     }
 }
 
+// This function generates HTML markup from api data
 function generateHTMLMarkup(data, icon, cityCountry, dateTime) {
     let currentWeather = document.querySelector(".currentDay");
     currentWeather.innerHTML = `
@@ -82,16 +89,26 @@ function generateHTMLMarkup(data, icon, cityCountry, dateTime) {
             </div>`
 }
 
+// This function calculates date time values
 async function calculateDateTime (values) {
-    let timezone = await getTimezoneFromLocation(values.coord.lat, values.coord.lon);
-    let sunrise = new Date(values.sys.sunrise * 1000).toLocaleString("en-US", { timeZone: timezone.zoneName }) + ` ${timezone.abbreviation}`;
-    let sunset = new Date(values.sys.sunset * 1000).toLocaleString("en-US", { timeZone: timezone.zoneName }) + ` ${timezone.abbreviation}`;
-    let today = new Date();
-    let date = today.toDateString();
-    let time = today.toTimeString();
-    return {sunrise, sunset, date, time};
+    try{
+        let timezone = await getTimezoneFromLocation(values.coord.lat, values.coord.lon);
+        let sunrise = new Date(values.sys.sunrise * 1000).toLocaleString("en-US", { timeZone: timezone.zoneName }) + ` ${timezone.abbreviation}`;
+        let sunset = new Date(values.sys.sunset * 1000).toLocaleString("en-US", { timeZone: timezone.zoneName }) + ` ${timezone.abbreviation}`;
+        let today = new Date();
+        let date = today.toDateString();
+        let time = today.toTimeString();
+        return { sunrise, sunset, date, time };    
+    }catch{
+        let sunrise = `Sunrise not available`;
+        let sunset = `Sunset not available`;
+        let date = `Date not available`;
+        let time = `Time not available`;
+        return { sunrise, sunset, date, time };
+    }
 }
 
+// This function unpacks data from open weather api
 async function parseData(city, data) {
     let cityCountry = ``;
     let currentWeather = document.querySelector(".currentDay");
@@ -123,9 +140,11 @@ async function parseData(city, data) {
             'speed': data['wind']['speed']
         }
     }
+    // If city not found
     if (values.cod == 404) {
         currentWeather.innerHTML = `Sorry "${city}" city not found`;
     } else {
+        // If city found
         let icon = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
         if (values.sys.country == undefined){
             cityCountry = values.name;
@@ -139,11 +158,13 @@ async function parseData(city, data) {
     setCustomEventListeners(true);
 }
 
+// This function gets weather details from open weather api
 async function fetchWeather(city) {
     try {
         const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${weatherApiKey}&units=metric`;
         const response = await fetch(apiUrl);
         const data = await response.json();
+        // If error occurs
         if (data.cod > 400) {
             loadAnimation(false);
             throw new Error("City not found");
@@ -152,16 +173,18 @@ async function fetchWeather(city) {
         }
     } catch (error) {
         loadAnimation(false);
-        document.querySelector(".currentDay").textContent = `Failed to get weather details, please try again.`;
+        document.querySelector(".currentDay").textContent = `Failed to get weather details of ${city}, please try again.`;
         setCustomEventListeners(true);
     }
 }
 
+// This function gets city from position from reverse open weather api
 async function getCityFromLatLong(lat, long) {
     try{
         const response = await fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${long}&units=metric&appid=${weatherApiKey}`)
         const data = await response.json();
         currentCity = data[0].name;
+        // Open weather does not takes in municipality
         if (currentCity.includes("Municipality")) {
             currentCity = currentCity.slice(0, -13);
         }
@@ -171,16 +194,19 @@ async function getCityFromLatLong(lat, long) {
         };
 }
 
+// If geolocation is resolved
 const resolveLocation = position => {
     getCityFromLatLong(position.coords.latitude, position.coords.longitude);
 }
 
+// If geolocation is rejected
 const rejectLocation = () => {
     const currentWeather = document.querySelector(".currentDay");
     currentWeather.textContent = "Browser failed to get location. Please give location access.";
     loadAnimation(false);
 }
 
+// This function uses geolocation using browser api and returns city
 async function getCurrentLocation() {
     if (navigator.geolocation) {
         try {
@@ -199,15 +225,18 @@ async function getCurrentLocation() {
     }
 }
 
-
+// This function
 async function triggerForLocation(event) {
     setCustomEventListeners(false);
     loadAnimation(true);
     let triggeredBy = this.id;
+    // If this function is called when page is loaded 
     if (event === defaultCity) {
             workingInCity = event;
+    // If this function is loaded when search button is pressed or enter key is pressed
     } else if (triggeredBy === "searchIcon" || event.target.classList[0] === "search") {
         let textInputCity = document.querySelector(".search").value;
+        // If text input is empty
         if (textInputCity === "") {
             alert("City name not found");
             loadAnimation(false);
@@ -215,6 +244,7 @@ async function triggerForLocation(event) {
             return;
             }
         workingInCity = textInputCity;
+    // If this function is loaded when current location button is pressed
     } else if (triggeredBy === "currentLocation") {
         if (currentCity == ""){
             await getCurrentLocation();
@@ -222,6 +252,7 @@ async function triggerForLocation(event) {
             workingInCity = currentCity;
         }
     }
+    // Start this after 2 seconds of the triggered
     setTimeout(async () => {
         if (triggeredBy == "currentLocation" && currentCity == "") {
             setCustomEventListeners(true);
@@ -232,7 +263,7 @@ async function triggerForLocation(event) {
     }, 2000);  
 }
 
-
+// This function adds event listeners
 function setCustomEventListeners(isTrue){
     if (isTrue){
         document.querySelector("#searchIcon").addEventListener("click", triggerForLocation);
@@ -243,14 +274,14 @@ function setCustomEventListeners(isTrue){
     }
 }
 
-
+// This function is called when the page is loaded
 function pageBegin() {
     document.getElementById("pageHead").textContent = "WeatherApp";
     setCustomEventListeners(true);
     let timeoutId;
+    // Setting enter key event listener
     document.querySelector(".search").addEventListener("keyup", function (event) {
         clearTimeout(timeoutId);
-
         if (event.key === "Enter") {
             timeoutId = setTimeout(function () {
                 triggerForLocation(event);
@@ -260,4 +291,5 @@ function pageBegin() {
     triggerForLocation(defaultCity);
 }
 
+// calling pageBegin when page is loaded
 pageBegin();

@@ -4,19 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather App</title>
+    <!-- CSS link -->
     <link href="style.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
 </head>
 
 <body>
+    <!-- Navigation bar -->
     <nav>
         <div id="pageHead"></div>
         <div id="location">
+            <!-- Input field -->
             <input class="search" type="text" placeholder="Search location">
             <div class="buttons">
+                <!-- Search button -->
                 <button id="searchIcon" type="button">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
+                <!-- Current location -->
                 <button id="currentLocation" type="button">
                     <i class="fa-solid fa-location-crosshairs"></i>
                 </button>
@@ -24,14 +29,16 @@
         </div>
     </nav>
     <main>
+        <!-- Main card -->
         <div class="currentDay">
             Loading...
         </div>
     </main>
+    <!-- Footer -->
     <footer>
         © 2023 Oscar Subedi. All Rights Reserved.
     </footer>
 </body>
+<!-- JS source -->
 <script src="script.js"></script>
-
 </html>
