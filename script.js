@@ -31,6 +31,53 @@ async function getTimezoneFromLocation(lat, lon) {
     return data;
 }
 
+async function parseData(city, data) {
+    let cityCountry = ``;
+    let currentWeather = document.querySelector(".currentDay");
+    console.log(city);
+    console.log(data);
+    loadAnimation(false);
+    values = {
+        'cod': data['cod'],
+        'coord': {
+            'lat': data['coord']['lat'],
+            'lon': data['coord']['lon']
+        },
+        'weather': {
+            'icon': data['weather'][0]['icon'],
+            'description': data['weather'][0]['description']
+        },
+        'sys': {
+            'country': data['sys']['country'],
+            'sunrise': data['sys']['sunrise'],
+            'sunset': data['sys']['sunset']
+        },
+        'name': data['name'],
+        'main': {
+            'temp': data['main']['temp'],
+            'humidity': data['main']['humidity'],
+            'pressure': data['main']['pressure']
+        },
+        'wind': {
+            'speed': data['wind']['speed']
+        }
+    }
+    if (values.cod == 404) {
+        currentWeather.innerHTML = `Sorry "${city}" city not found`;
+    } else {
+        let icon = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+        if (values.sys.country == undefined){
+            cityCountry = values.name;
+        }else{
+            cityCountry = `${values.name}, ${values.sys.country}`;
+        }
+        dateTime = await calculateDateTime(values);
+        setColor(values.main.temp);
+        generateHTMLMarkup(values, icon, cityCountry, dateTime);
+    }
+    setCustomEventListeners(true);
+}
+
 async function fetchWeather(city) {
     try {
         const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${weatherApiKey}&units=metric`;
