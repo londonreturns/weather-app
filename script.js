@@ -238,7 +238,7 @@ async function triggerForLocation(event) {
         let textInputCity = document.querySelector(".search").value;
         // If text input is empty
         if (textInputCity === "") {
-            alert("City name not found");
+            alert("Empty text field found, please enter valid city name.");
             loadAnimation(false);
             setCustomEventListeners(true);
             return;
