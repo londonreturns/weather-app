@@ -57,6 +57,41 @@ function setColor(temp){
     }
 }
 
+function generateHTMLMarkup(data, icon, cityCountry, dateTime) {
+    let currentWeather = document.querySelector(".currentDay");
+    currentWeather.innerHTML = `
+            <div class="weatherDetails">
+                <div id="flexBox1">
+                    <div id="logo"><img id="icon" src="${icon}" alt="${icon}"></div>
+                    <div id="box1">
+                        <div id="temperature"> <img width="80" height="80" src="https://img.icons8.com/color/96/thermometer.png" alt="thermometer"/>${data.main.temp}°C</div>
+                        <div id="cityName">${cityCountry}</div>
+                    </div>
+                </div>
+                <br>
+                <div id="description">Weather Condition: ${data.weather.description}</div>
+                <div id="flexBox2">
+                    <div id="humidity"><img width="80" height="80" src="https://img.icons8.com/color/96/humidity.png" alt="humidity"/> ${data.main.humidity}%</div>
+                    <div id="pressure"><img width="80" height="80" src="https://img.icons8.com/color/96/atmospheric-pressure.png" alt="atmospheric-pressure"/> ${data.main.pressure} hPa</div>
+                    <div id="wind"><img width="80" height="80" src="https://img.icons8.com/color/96/wind.png" alt="wind"/>  ${data.wind.speed} m/s</div>
+                </div>
+                <br>
+                <div id="sunrise"><img width="80" height="80" src="https://img.icons8.com/color/96/sunrise.png" alt="sunrise"/>  ${dateTime.sunrise}</div>
+                <div id="sunset"><img width="80" height="80" src="https://img.icons8.com/color/96/sunset.png" alt="sunset"/>  ${dateTime.sunset}</div><br>
+                <div id="dateTime">Accessed at ${dateTime.time} ${dateTime.date}</div>
+            </div>`
+}
+
+async function calculateDateTime (values) {
+    let timezone = await getTimezoneFromLocation(values.coord.lat, values.coord.lon);
+    let sunrise = new Date(values.sys.sunrise * 1000).toLocaleString("en-US", { timeZone: timezone.zoneName }) + ` ${timezone.abbreviation}`;
+    let sunset = new Date(values.sys.sunset * 1000).toLocaleString("en-US", { timeZone: timezone.zoneName }) + ` ${timezone.abbreviation}`;
+    let today = new Date();
+    let date = today.toDateString();
+    let time = today.toTimeString();
+    return {sunrise, sunset, date, time};
+}
+
 async function parseData(city, data) {
     let cityCountry = ``;
     let currentWeather = document.querySelector(".currentDay");
