@@ -83,9 +83,9 @@ function generateHTMLMarkup(data, icon, cityCountry, dateTime) {
                     <div id="wind"><img width="80" height="80" src="https://img.icons8.com/color/96/wind.png" alt="wind"/>  ${data.wind.speed} m/s</div>
                 </div>
                 <br>
-                <div id="sunrise"><img width="80" height="80" src="https://img.icons8.com/color/96/sunrise.png" alt="sunrise"/>  ${dateTime.sunrise}</div>
-                <div id="sunset"><img width="80" height="80" src="https://img.icons8.com/color/96/sunset.png" alt="sunset"/>  ${dateTime.sunset}</div><br>
-                <div id="dateTime">Accessed at ${dateTime.time} ${dateTime.date}</div>
+                <div id="sunrise"><img width="80" height="80" src="https://img.icons8.com/color/96/sunrise.png" alt="sunrise"/>  ${values.sys.sunrise}</div>
+                <div id="sunset"><img width="80" height="80" src="https://img.icons8.com/color/96/sunset.png" alt="sunset"/>  ${values.sys.sunset}</div><br>
+                <div id="dateTime">Accessed at ${values.time} ${values.date}</div>
             </div>`
 }
 
@@ -112,8 +112,6 @@ async function calculateDateTime (values) {
 async function parseData(city, data) {
     let cityCountry = ``;
     let currentWeather = document.querySelector(".currentDay");
-    console.log(city);
-    console.log(data);
     loadAnimation(false);
     values = {
         'cod': data['cod'],
@@ -153,7 +151,11 @@ async function parseData(city, data) {
         }
         dateTime = await calculateDateTime(values);
         setColor(values.main.temp);
-        generateHTMLMarkup(values, icon, cityCountry, dateTime);
+        values['sys']['sunrise'] = dateTime["sunrise"];
+        values['sys']['sunset'] = dateTime["sunset"];
+        values['date'] = dateTime["date"]
+        values['time'] = dateTime["time"]
+        generateHTMLMarkup(values, icon, cityCountry);
     }
     setCustomEventListeners(true);
 }
