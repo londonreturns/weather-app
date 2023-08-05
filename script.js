@@ -113,7 +113,12 @@ async function parseData(city, data) {
     let cityCountry = ``;
     let currentWeather = document.querySelector(".currentDay");
     loadAnimation(false);
-    values = {
+    // If city not found
+    if (data['cod'] == 404) {
+        currentWeather.innerHTML = `Sorry "${city}" city not found`;
+        console.log("Here")
+    } else {
+        values = {
         'cod': data['cod'],
         'coord': {
             'lat': data['coord']['lat'],
@@ -138,10 +143,6 @@ async function parseData(city, data) {
             'speed': data['wind']['speed']
         }
     }
-    // If city not found
-    if (values.cod == 404) {
-        currentWeather.innerHTML = `Sorry "${city}" city not found`;
-    } else {
         // If city found
         let icon = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
         if (values.sys.country == undefined){
@@ -155,6 +156,7 @@ async function parseData(city, data) {
         values['sys']['sunset'] = dateTime["sunset"];
         values['date'] = dateTime["date"]
         values['time'] = dateTime["time"]
+        toggleHistory(true);
         generateHTMLMarkup(values, icon, cityCountry);
     }
     setCustomEventListeners(true);
@@ -169,7 +171,7 @@ async function fetchWeather(city) {
         // If error occurs
         if (data.cod > 400) {
             loadAnimation(false);
-            throw new Error("City not found");
+            return data;
         } else {
             return data;
         }
@@ -229,6 +231,7 @@ async function getCurrentLocation() {
 
 // This function
 async function triggerForLocation(event) {
+    toggleHistory(false);
     setCustomEventListeners(false);
     loadAnimation(true);
     let triggeredBy = this.id;
@@ -265,6 +268,16 @@ async function triggerForLocation(event) {
     }, 2000);  
 }
 
+function toggleHistory(isTrue){
+    let btn = document.querySelector(".historyButton");    
+    if (isTrue){
+        btn.style.display = "inline-block";
+    }else{
+        btn.style.display = "none";
+    }
+}
+
+
 // This function adds event listeners
 function setCustomEventListeners(isTrue){
     if (isTrue){
@@ -278,6 +291,7 @@ function setCustomEventListeners(isTrue){
 
 // This function is called when the page is loaded
 function pageBegin() {
+    toggleHistory(false);
     document.getElementById("pageHead").textContent = "WeatherApp";
     setCustomEventListeners(true);
     let timeoutId;

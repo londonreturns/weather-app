@@ -136,6 +136,19 @@ button {
     text-align: center;
 }
 
+.history{
+    align-self: center;
+}
+
+.historyButton{
+    width: 100px;
+}
+
+.historyButton:hover{
+    background-color: white;
+    transition: .3s;
+}
+
 footer{
     text-align: right;
     font-size: 18px;
