@@ -1,0 +1,80 @@
+/* Variable used for colors */
+:root {
+    --color1: white;
+    --color2: white;
+    --color3: white;
+    --color4: white;
+    --color5: white;
+    --color6: white;
+    --color7: white;
+    --color8: black;
+    --color9: white;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+}
+
+body {
+    background-color: var(--color1);
+}
+
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+    justify-content: space-around;
+    background-color: var(--color2);
+}
+
+#pageHead {
+    font-size: 45px;
+    background-color: var(--color3);
+    padding: 25px 45px 25px 45px;
+    border: 2px solid var(--color7);
+    color: var(--color5);
+    border-radius: 35px;
+}
+
+.oldData {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.record {
+    color: antiquewhite;
+    font-size: 15px;
+    background-color: var(--color3);
+    padding: 20px;
+    margin-top: 25px;
+    line-height: 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px 0 var(--color9), 0 6px 20px 0 var(--color9);
+    margin-left: 15px;
+    margin-right: 15px;
+    text-transform: capitalize;
+    text-align: center;
+}
+
+.record img{
+    width: 125px;
+}
+
+.heading{
+    margin-top: 20px;
+    text-align: center;
+    font-size: 30px;
+}
+
+footer {
+    text-align: right;
+    font-size: 18px;
+    padding: 15px;
+    color: var(--color7);
+}
