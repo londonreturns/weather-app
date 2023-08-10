@@ -11,6 +11,8 @@ function generateHTMLMarkup(data){
             oldData.innerHTML += `<div class="record record${day.id}"></div>`;
             let recordHTML = document.querySelector(`.record${day.id}`);
             recordHTML.innerHTML += `
+                ${day.date_accessed}                    
+                ${day.day_accessed}<br>
                 <img id="icon" src="https://openweathermap.org/img/wn/${day.icon}@2x.png" alt="${day.icon}">
                 <p>Temperature: ${day.temperature}</p>
                 <p>Weather Condition: ${day.weather_condition}</p>
@@ -19,11 +21,19 @@ function generateHTMLMarkup(data){
                 <p>Wind Speed: ${day.wind}m/s</p>
                 <p>Sunrise: ${day.sunrise}</p>
                 <p>Sunset: ${day.sunset}</p>
-                <p>Time Accessed: ${day.time_accessed}</p>        
-                <p>Date Accessed: ${day.dateDay_accessed}</p>            
+                <p>Time Accessed: ${day.time_accessed}</p>                    
             `;
         })
     }
+}
+
+function setColor(){
+    document.documentElement.style.setProperty("--color1", "#2A2F4F");
+    document.documentElement.style.setProperty("--color2", "#E5BEEC");
+    document.documentElement.style.setProperty("--color3", "#917FB3");
+    document.documentElement.style.setProperty("--color4", "#FDE2F3");
+    document.documentElement.style.setProperty("--color8", "#FFFFFF");
+    document.documentElement.style.setProperty("--color9", "#000000");
 }
 
 async function fetchData(city){
@@ -58,15 +68,13 @@ function getParams ()
 location.getParams = getParams;
 
 async function afterLoad(){
+    setColor();
+    document.querySelector('.goBack').addEventListener('click', () => {
+        window.history.back();
+    });
     city = location.getParams();
     const data = await fetchData(city);
     generateHTMLMarkup(data)
 }
 
 afterLoad();
-document.documentElement.style.setProperty("--color1", "#2A2F4F");
-document.documentElement.style.setProperty("--color2", "#E5BEEC");
-document.documentElement.style.setProperty("--color3", "#917FB3");
-document.documentElement.style.setProperty("--color4", "#FDE2F3");
-document.documentElement.style.setProperty("--color8", "#FFFFFF");
-document.documentElement.style.setProperty("--color9", "#000000");
