@@ -116,7 +116,6 @@ async function parseData(city, data) {
     // If city not found
     if (data['cod'] == 404) {
         currentWeather.innerHTML = `Sorry "${city}" city not found`;
-        console.log("Here")
     } else {
         values = {
         'cod': data['cod'],
@@ -152,11 +151,25 @@ async function parseData(city, data) {
         }
         dateTime = await calculateDateTime(values);
         setColor(values.main.temp);
-        values['sys']['sunrise'] = dateTime["sunrise"];
-        values['sys']['sunset'] = dateTime["sunset"];
-        values['date'] = dateTime["date"]
-        values['time'] = dateTime["time"]
+        values['name'] = workingInCity;
+        values['sys']['sunrise'] = dateTime["sunrise"].split(',')[1].trim();
+        values['sys']['sunset'] = dateTime["sunset"].split(',')[1].trim();
+        values['day'] = dateTime["date"].split(' ')[0];
+        values['time'] = dateTime["time"];
+        unformattedDate = dateTime["sunrise"].split(',')[0].trim();
+        values['date'] = unformattedDate;
         toggleHistory(true);
+        let res = await fetch("insert.php", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(values) 
+        })
+        let phpRes = await res.json();
+        if (phpRes.success != true){
+            alert("Problem while logging data to the database");
+        }
         generateHTMLMarkup(values, icon, cityCountry);
     }
     setCustomEventListeners(true);
@@ -200,6 +213,7 @@ async function getCityFromLatLong(lat, long) {
 
 // If geolocation is resolved
 const resolveLocation = position => {
+    loadAnimation(false);
     getCityFromLatLong(position.coords.latitude, position.coords.longitude);
 }
 
@@ -217,7 +231,6 @@ async function getCurrentLocation() {
             const position = await new Promise((resolve, reject) => {
                 navigator.geolocation.getCurrentPosition(resolve, reject);
             });
-            loadAnimation(false);
             resolveLocation(position);
         } catch (error) {   
             document.querySelector(".currentDay").textContent = "Some error occured, please try again."
