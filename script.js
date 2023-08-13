@@ -238,7 +238,7 @@ async function getCurrentLocation() {
     }
 }
 
-// This function
+// This function is called from all the triggers
 async function triggerForLocation(event) {
     toggleHistory(false);
     setCustomEventListeners(false);
@@ -277,6 +277,7 @@ async function triggerForLocation(event) {
     }, 2000);  
 }
 
+// Toggles history button
 function toggleHistory(isTrue){
     let btn = document.querySelector(".historyButton");    
     if (isTrue){

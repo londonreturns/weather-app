@@ -1,17 +1,20 @@
 <?php
+	// Include connection
 	include 'connection.php';
-
+	// Get data from POST
 	if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	    try {
 	        $jsonData = file_get_contents("php://input");
+			// If no JSON
 	        if ($jsonData === false) {
 	            throw new Exception("Error reading input data");
 	        }
-
+			// Unparse data
 	        $data = json_decode($jsonData, true);
 	        if ($data === null) {
 	            throw new Exception("Error decoding JSON data");
 	        }
+			// SQL query
 			$sql = "INSERT INTO weather (
 				city, 
 				country,
@@ -41,14 +44,14 @@
 				STR_TO_DATE('{$data['date']}', '%m/%d/%Y'),
 				'{$data['weather']['icon']}'
 			)";
-
 	        if ($conn->query($sql) === TRUE) {
-	            header('Content-Type: application/json');
+				// If successful, send True
+				header('Content-Type: application/json');
 	            echo json_encode(['success' => true, 'message' => 'Data processed successfully']);
 	        } else {
+				// If unsuccessful, send False
 	            throw new Exception("Error inserting data: ");
 	        }
-
 	        $conn->close();
 	    } catch (Exception $e) {
 	        http_response_code(400);

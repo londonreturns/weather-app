@@ -56,10 +56,11 @@ nav {
     line-height: 20px;
     border-radius: 20px;
     box-shadow: 0 4px 8px 0 var(--color9), 0 6px 20px 0 var(--color9);
-    margin-left: 15px;
-    margin-right: 15px;
+    margin-left: 25px;
+    margin-right: 25px;
     text-transform: capitalize;
     text-align: center;
+    width: 250px;
 }
 
 .record img{
@@ -75,7 +76,7 @@ nav {
 button{
     width: 100px;
     height: 45px;
-    margin-left: 20px;
+    margin: 20px;
     background-color: var(--color3);
     border-radius: 5px;
     color: black;
