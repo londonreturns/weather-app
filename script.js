@@ -150,7 +150,6 @@ async function parseData(city, data) {
             cityCountry = `${values.name}, ${values.sys.country}`;
         }
         dateTime = await calculateDateTime(values);
-        setColor(values.main.temp);
         values['name'] = workingInCity;
         values['sys']['sunrise'] = dateTime["sunrise"].split(',')[1].trim();
         values['sys']['sunset'] = dateTime["sunset"].split(',')[1].trim();
@@ -170,6 +169,7 @@ async function parseData(city, data) {
         if (phpRes.success != true){
             alert("Problem while logging data to the database");
         }
+        setColor(values.main.temp);
         generateHTMLMarkup(values, icon, cityCountry);
     }
     setCustomEventListeners(true);
@@ -201,10 +201,6 @@ async function getCityFromLatLong(lat, long) {
         const response = await fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${long}&units=metric&appid=${weatherApiKey}`)
         const data = await response.json();
         currentCity = data[0].name;
-        // Open weather does not takes in municipality
-        if (currentCity.includes("Municipality")) {
-            currentCity = currentCity.slice(0, -13);
-        }
         workingInCity = currentCity;
     }catch(error) {
         currentWeather.textContent = "Failed to get weather details, please try again.";
@@ -318,6 +314,9 @@ function pageBegin() {
         }
     });
     triggerForLocation(defaultCity);
+    document.querySelector(".historyButton").addEventListener("click", () => {
+        window.location.href = `history.html?city=${workingInCity}`;
+    })
 }
 
 // calling pageBegin when page is loaded
