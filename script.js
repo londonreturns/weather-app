@@ -116,7 +116,7 @@ async function parseData(city, data) {
     // If city not found
     try{
         if (data['cod'] == 404) {
-            currentWeather.innerHTML = `Sorry "${city}" city not found`;
+            currentWeather.innerHTML = `Sorry, "${city}" city not found`;
         } else {
             // If city found
             if (data.sys.country == undefined) {
@@ -146,10 +146,11 @@ async function fetchWeather(city) {
         const response = await fetch(apiUrl);
         const data = await response.json();
         // If error occurs
-        if (data.cod > 400) {
+        if (data.cod >= 400) {
             loadAnimation(false);
             return data;
         } else {
+            console.log("Data from api")
             dateTime = await calculateDateTime(data);
             data['name'] = workingInCity;
             data['sys']['sunrise'] = dateTime["sunrise"].split(',')[1];
@@ -189,7 +190,7 @@ const resolveLocation = position => {
 // If geolocation is rejected
 const rejectLocation = () => {
     const currentWeather = document.querySelector(".currentDay");
-    currentWeather.textContent = "Browser failed to get location. Please give location access.";
+    currentWeather.textContent = "Browser failed to get location.";
     loadAnimation(false);
 }
 
@@ -253,21 +254,25 @@ async function triggerForLocation(event) {
                     return
                 } else {
                     let data = await parseData(workingInCity, await fetchWeather(workingInCity));
-                    if (data.cod == 200){
-                        localStorage.setItem(workingInCity, JSON.stringify(data));
+                    // Handles if device is connected in a newtwork
+                    if (data != undefined){
+                        if (data.cod == 200) {
+                            localStorage.setItem(workingInCity, JSON.stringify(data));
+                        }
+                        let res = await fetch("insert.php", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(data)
+                        })
+                        toggleHistory(true);
+                        let phpRes = await res.json();
+                        if (phpRes.success != true) {
+                            alert("Problem while logging data to the database");
+                        }
                     }
-                    let res = await fetch("insert.php", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(data)
-                    })
-                    toggleHistory(true);
-                    let phpRes = await res.json();
-                    if (phpRes.success != true) {
-                        alert("Problem while logging data to the database");
-                    }
+                    
                 }
             }, 2000);
         }
@@ -293,7 +298,7 @@ async function triggerForLocation(event) {
         // If no previous data for the city from local storage
         if (localData == null) {
             loadAnimation(false);
-            document.querySelector(".currentDay").textContent = `Sorry ${workingInCity} city data not available`;
+            document.querySelector(".currentDay").textContent = `Sorry, ${workingInCity} city data not available`;
             // Start this after 2 seconds of the triggered(wait for geolocation)
             setTimeout(async () => {
                 if (triggeredBy == "currentLocation" && currentCity == "") {

@@ -16,7 +16,7 @@ function generateHTMLMarkup(data){
             recordHTML.innerHTML += `
                 ${day.date_accessed}                    
                 ${day.day_accessed}<br>
-                <img id="icon" src="https://openweathermap.org/img/wn/${day.icon}@2x.png" alt="${day.icon}">
+                <img id="icon" src="https://openweathermap.org/img/wn/${day.icon}@2x.png" alt="${day.weather_condition}">
                 <p>Temperature: ${day.temperature}</p>
                 <p>Weather Condition: ${day.weather_condition}</p>
                 <p>Humidity: ${day.humidity}%</p>
