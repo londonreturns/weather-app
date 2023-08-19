@@ -5,7 +5,6 @@ var city;
 function generateHTMLMarkup(data){
     document.querySelector(".heading").innerHTML = city;
     let oldData = document.querySelector(".oldData");
-    console.log(data)
     if (data.length == 0){
         // If no data found
         oldData.innerHTML += `<div class="record">Sorry, no results found for ${city}.</div>`;
@@ -52,6 +51,7 @@ async function fetchData(city){
         body: JSON.stringify(data) 
     })
     let phpRes = await res.json();
+    console.log("Data from database");
     return phpRes
 }
 

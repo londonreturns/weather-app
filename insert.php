@@ -33,7 +33,7 @@
 				'{$data['name']}',
 				'{$data['sys']['country']}',
 				'{$data['main']['temp']}',
-				'{$data['weather']['description']}',
+				'{$data['weather'][0]['description']}',
 				'{$data['main']['humidity']}',
 				'{$data['main']['pressure']}',
 				'{$data['wind']['speed']}',
@@ -42,8 +42,8 @@
 				'{$data['time']}',
 				'{$data['day']}',
 				STR_TO_DATE('{$data['date']}', '%m/%d/%Y'),
-				'{$data['weather']['icon']}'
-			)";
+				'{$data['weather'][0]['icon']}'
+			)";			
 	        if ($conn->query($sql) === TRUE) {
 				// If successful, send True
 				header('Content-Type: application/json');

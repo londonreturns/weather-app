@@ -64,28 +64,28 @@ function setColor(temp){
 }
 
 // This function generates HTML markup from api data
-function generateHTMLMarkup(data, icon, cityCountry, dateTime) {
+function generateHTMLMarkup(data) {
     let currentWeather = document.querySelector(".currentDay");
     currentWeather.innerHTML = `
             <div class="weatherDetails">
                 <div id="flexBox1">
-                    <div id="logo"><img id="icon" src="${icon}" alt="${icon}"></div>
+                    <div id="logo"><img id="icon" src="${data.iconLink}" alt="${data.weather[0].description}"></div>
                     <div id="box1">
                         <div id="temperature"> <img width="80" height="80" src="https://img.icons8.com/color/96/thermometer.png" alt="thermometer"/>${data.main.temp}°C</div>
-                        <div id="cityName">${cityCountry}</div>
+                        <div id="cityName">${data.cityCountry}</div>
                     </div>
                 </div>
                 <br>
-                <div id="description">Weather Condition: ${data.weather.description}</div>
+                <div id="description">Weather Condition: ${data.weather[0].description}</div>
                 <div id="flexBox2">
                     <div id="humidity"><img width="80" height="80" src="https://img.icons8.com/color/96/humidity.png" alt="humidity"/> ${data.main.humidity}%</div>
                     <div id="pressure"><img width="80" height="80" src="https://img.icons8.com/color/96/atmospheric-pressure.png" alt="atmospheric-pressure"/> ${data.main.pressure} hPa</div>
                     <div id="wind"><img width="80" height="80" src="https://img.icons8.com/color/96/wind.png" alt="wind"/>  ${data.wind.speed} m/s</div>
                 </div>
                 <br>
-                <div id="sunrise"><img width="80" height="80" src="https://img.icons8.com/color/96/sunrise.png" alt="sunrise"/>  ${values.sys.sunrise}</div>
-                <div id="sunset"><img width="80" height="80" src="https://img.icons8.com/color/96/sunset.png" alt="sunset"/>  ${values.sys.sunset}</div><br>
-                <div id="dateTime">Accessed at ${values.time} ${values.date}</div>
+                <div id="sunrise"><img width="80" height="80" src="https://img.icons8.com/color/96/sunrise.png" alt="sunrise"/>  ${data.sys.sunrise}</div>
+                <div id="sunset"><img width="80" height="80" src="https://img.icons8.com/color/96/sunset.png" alt="sunset"/>  ${data.sys.sunset}</div><br>
+                <div id="dateTime">Accessed at ${data.time} ${data.date}</div>
             </div>`
 }
 
@@ -114,65 +114,29 @@ async function parseData(city, data) {
     let currentWeather = document.querySelector(".currentDay");
     loadAnimation(false);
     // If city not found
-    if (data['cod'] == 404) {
-        currentWeather.innerHTML = `Sorry "${city}" city not found`;
-    } else {
-        values = {
-        'cod': data['cod'],
-        'coord': {
-            'lat': data['coord']['lat'],
-            'lon': data['coord']['lon']
-        },
-        'weather': {
-            'icon': data['weather'][0]['icon'],
-            'description': data['weather'][0]['description']
-        },
-        'sys': {
-            'country': data['sys']['country'],
-            'sunrise': data['sys']['sunrise'],
-            'sunset': data['sys']['sunset']
-        },
-        'name': data['name'],
-        'main': {
-            'temp': data['main']['temp'],
-            'humidity': data['main']['humidity'],
-            'pressure': data['main']['pressure']
-        },
-        'wind': {
-            'speed': data['wind']['speed']
+    try{
+        if (data['cod'] == 404) {
+            currentWeather.innerHTML = `Sorry "${city}" city not found`;
+        } else {
+            // If city found
+            if (data.sys.country == undefined) {
+                cityCountry = data.name;
+            } else {
+                cityCountry = `${data.name}, ${data.sys.country}`;
+            }
+            data['iconLink'] = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+            toggleHistory(true);
+            setColor(data.main.temp);
+            data['weather'][0]['icon'] = data['weather'][0]['icon'];
+            data["cityCountry"] = cityCountry;
+            generateHTMLMarkup(data);
         }
+        setCustomEventListeners(true);
+        return data;
+    }catch{
+        console.error();
     }
-        // If city found
-        let icon = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
-        if (values.sys.country == undefined){
-            cityCountry = values.name;
-        }else{
-            cityCountry = `${values.name}, ${values.sys.country}`;
-        }
-        dateTime = await calculateDateTime(values);
-        values['name'] = workingInCity;
-        values['sys']['sunrise'] = dateTime["sunrise"].split(',')[1].trim();
-        values['sys']['sunset'] = dateTime["sunset"].split(',')[1].trim();
-        values['day'] = dateTime["date"].split(' ')[0];
-        values['time'] = dateTime["time"];
-        unformattedDate = dateTime["sunrise"].split(',')[0].trim();
-        values['date'] = unformattedDate;
-        toggleHistory(true);
-        let res = await fetch("insert.php", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(values) 
-        })
-        let phpRes = await res.json();
-        if (phpRes.success != true){
-            alert("Problem while logging data to the database");
-        }
-        setColor(values.main.temp);
-        generateHTMLMarkup(values, icon, cityCountry);
-    }
-    setCustomEventListeners(true);
+    
 }
 
 // This function gets weather details from open weather api
@@ -186,11 +150,20 @@ async function fetchWeather(city) {
             loadAnimation(false);
             return data;
         } else {
+            dateTime = await calculateDateTime(data);
+            data['name'] = workingInCity;
+            data['sys']['sunrise'] = dateTime["sunrise"].split(',')[1];
+            data['sys']['sunset'] = dateTime["sunset"].split(',')[1];
+            data['day'] = dateTime["date"].split(' ')[0];
+            data['time'] = dateTime["time"];
+            unformattedDate = dateTime["sunrise"].split(',')[0].trim();
+            data['date'] = unformattedDate;
             return data;
         }
     } catch (error) {
         loadAnimation(false);
         document.querySelector(".currentDay").textContent = `Failed to get weather details of ${city}, please try again.`;
+        setColor(25);
         setCustomEventListeners(true);
     }
 }
@@ -261,20 +234,81 @@ async function triggerForLocation(event) {
     // If this function is loaded when current location button is pressed
     } else if (triggeredBy === "currentLocation") {
         if (currentCity == ""){
-            await getCurrentLocation();
+            workingInCity = await getCurrentLocation();
         }else{
             workingInCity = currentCity;
         }
     }
-    // Start this after 2 seconds of the triggered
-    setTimeout(async () => {
-        if (triggeredBy == "currentLocation" && currentCity == "") {
-            setCustomEventListeners(true);
-            return
-        }else{
-                parseData(workingInCity, await fetchWeather(workingInCity));
-        } 
-    }, 2000);  
+    console.log(workingInCity)
+    // If connected to internet
+    if (navigator.onLine){
+        // Get previous data for the city from local storage
+        localData = JSON.parse(localStorage.getItem(workingInCity));
+        // If no local storage data, get data from api
+        if (localData == null){
+            // Start this after 2 seconds of the triggered(wait for geolocation)
+            setTimeout(async () => {
+                if (triggeredBy == "currentLocation" && currentCity == "") {
+                    setCustomEventListeners(true);
+                    return
+                } else {
+                    let data = await parseData(workingInCity, await fetchWeather(workingInCity));
+                    if (data.cod == 200){
+                        localStorage.setItem(workingInCity, JSON.stringify(data));
+                    }
+                    let res = await fetch("insert.php", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    toggleHistory(true);
+                    let phpRes = await res.json();
+                    if (phpRes.success != true) {
+                        alert("Problem while logging data to the database");
+                    }
+                }
+            }, 2000);
+        }
+        // If found data in local storage
+        else {
+            let today = new Date().toLocaleDateString('en-US');
+            // If same date
+            if (today == localData["date"]){
+                console.log("Data from local storage");
+                await parseData(workingInCity, localData);
+            }
+            // If not same date
+            else{
+                let data = await parseData(workingInCity, await fetchWeather(workingInCity));
+                localStorage.setItem(workingInCity, JSON.stringify(data));
+            }
+            toggleHistory(true);
+        }
+    }
+    // If not connected to internet
+    else {
+        localData = JSON.parse(localStorage.getItem(workingInCity));
+        // If no previous data for the city from local storage
+        if (localData == null) {
+            loadAnimation(false);
+            document.querySelector(".currentDay").textContent = `Sorry ${workingInCity} city data not available`;
+            // Start this after 2 seconds of the triggered(wait for geolocation)
+            setTimeout(async () => {
+                if (triggeredBy == "currentLocation" && currentCity == "") {
+                    setCustomEventListeners(true);
+                    return
+                }
+            }, 2000);  
+        }
+        // If previous data for the city from local storage
+        else {
+            console.log("Data from local storage");
+            await parseData(workingInCity, localData);
+            toggleHistory(true);
+        }
+    }
 }
 
 // Toggles history button
