@@ -212,6 +212,20 @@ async function getCurrentLocation() {
     }
 }
 
+async function sendDataToDatabase(data){
+    let res = await fetch("insert.php", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    let phpRes = await res.json();
+    if (phpRes.success != true) {
+        alert("Problem while logging data to the database");
+    }
+}
+
 // This function is called from all the triggers
 async function triggerForLocation(event) {
     toggleHistory(false);
@@ -223,7 +237,16 @@ async function triggerForLocation(event) {
             workingInCity = event;
     // If this function is loaded when search button is pressed or enter key is pressed
     } else if (triggeredBy === "searchIcon" || event.target.classList[0] === "search") {
-        let textInputCity = document.querySelector(".search").value;
+        // Capitalize
+        function capitalizeWords(preStr) {
+            return preStr.split(' ').map(word => {
+                if (word.length > 0) {
+                    return word[0].toUpperCase() + word.slice(1).toLowerCase();
+                }
+                return word;
+            }).join(' ');
+        }
+        let textInputCity = capitalizeWords(document.querySelector(".search").value);
         // If text input is empty
         if (textInputCity === "") {
             alert("Empty text field found, please enter valid city name.");
@@ -258,18 +281,8 @@ async function triggerForLocation(event) {
                     if (data != undefined){
                         if (data.cod == 200) {
                             localStorage.setItem(workingInCity, JSON.stringify(data));
-                        }
-                        let res = await fetch("insert.php", {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(data)
-                        })
-                        toggleHistory(true);
-                        let phpRes = await res.json();
-                        if (phpRes.success != true) {
-                            alert("Problem while logging data to the database");
+                            sendDataToDatabase(data);
+                            toggleHistory(true);
                         }
                     }
                     
@@ -288,8 +301,9 @@ async function triggerForLocation(event) {
             else{
                 let data = await parseData(workingInCity, await fetchWeather(workingInCity));
                 localStorage.setItem(workingInCity, JSON.stringify(data));
+                sendDataToDatabase(data);
+                toggleHistory(true);
             }
-            toggleHistory(true);
         }
     }
     // If not connected to internet
