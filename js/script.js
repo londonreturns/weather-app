@@ -213,7 +213,7 @@ async function getCurrentLocation() {
 }
 
 async function sendDataToDatabase(data){
-    let res = await fetch("insert.php", {
+    let res = await fetch("./php/insert.php", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

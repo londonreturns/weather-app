@@ -43,7 +43,7 @@ function setColor(){
 // This function fetches data from php
 async function fetchData(city){
 	const data = {"city": city}
-    let res = await fetch("select.php", {
+    let res = await fetch("./php/select.php", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
