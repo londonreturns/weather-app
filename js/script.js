@@ -71,20 +71,20 @@ function generateHTMLMarkup(data) {
                 <div id="flexBox1">
                     <div id="logo"><img id="icon" src="${data.iconLink}" alt="${data.weather[0].description}"></div>
                     <div id="box1">
-                        <div id="temperature"> <img width="80" height="80" src="https://img.icons8.com/color/96/thermometer.png" alt="thermometer"/>${data.main.temp}°C</div>
+                        <div id="temperature"> <img width="80" height="80" src="./images/thermometer.png" alt="thermometer"/>${data.main.temp}°C</div>
                         <div id="cityName">${data.cityCountry}</div>
                     </div>
                 </div>
                 <br>
                 <div id="description">Weather Condition: ${data.weather[0].description}</div>
                 <div id="flexBox2">
-                    <div id="humidity"><img width="80" height="80" src="https://img.icons8.com/color/96/humidity.png" alt="humidity"/> ${data.main.humidity}%</div>
-                    <div id="pressure"><img width="80" height="80" src="https://img.icons8.com/color/96/atmospheric-pressure.png" alt="atmospheric-pressure"/> ${data.main.pressure} hPa</div>
-                    <div id="wind"><img width="80" height="80" src="https://img.icons8.com/color/96/wind.png" alt="wind"/>  ${data.wind.speed} m/s</div>
+                    <div id="humidity"><img width="80" height="80" src="./images/humidity.png" alt="humidity"/> ${data.main.humidity}%</div>
+                    <div id="pressure"><img width="80" height="80" src="./images/pressure.png" alt="atmospheric-pressure"/> ${data.main.pressure} hPa</div>
+                    <div id="wind"><img width="80" height="80" src="./images/wind.png" alt="wind"/>  ${data.wind.speed} m/s</div>
                 </div>
                 <br>
-                <div id="sunrise"><img width="80" height="80" src="https://img.icons8.com/color/96/sunrise.png" alt="sunrise"/>  ${data.sys.sunrise}</div>
-                <div id="sunset"><img width="80" height="80" src="https://img.icons8.com/color/96/sunset.png" alt="sunset"/>  ${data.sys.sunset}</div><br>
+                <div id="sunrise"><img width="80" height="80" src="./images/sunrise.png" alt="sunrise"/>  ${data.sys.sunrise}</div>
+                <div id="sunset"><img width="80" height="80" src="./images/sunset.png" alt="sunset"/>  ${data.sys.sunset}</div><br>
                 <div id="dateTime">Accessed at ${data.time} ${data.date}</div>
             </div>`
 }
