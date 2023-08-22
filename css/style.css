@@ -136,6 +136,13 @@ button {
     justify-content: space-between;   
 }
 
+#flexBox3{
+    display: flex;
+    margin-bottom: 50px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
 #dateTime{
     text-align: center;
 }

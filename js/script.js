@@ -83,8 +83,10 @@ function generateHTMLMarkup(data) {
                     <div id="wind"><img width="80" height="80" src="./images/wind.png" alt="wind"/>  ${data.wind.speed} m/s</div>
                 </div>
                 <br>
-                <div id="sunrise"><img width="80" height="80" src="./images/sunrise.png" alt="sunrise"/>  ${data.sys.sunrise}</div>
-                <div id="sunset"><img width="80" height="80" src="./images/sunset.png" alt="sunset"/>  ${data.sys.sunset}</div><br>
+                <div id="flexBox3">
+                    <div id="sunrise"><img width="80" height="80" src="./images/sunrise.png" alt="sunrise"/>  ${data.sys.sunrise}</div>
+                    <div id="sunset"><img width="80" height="80" src="./images/sunset.png" alt="sunset"/>  ${data.sys.sunset}</div><br>
+                </div>
                 <div id="dateTime">Accessed at ${data.time} ${data.date}</div>
             </div>`
 }
