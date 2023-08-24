@@ -152,7 +152,7 @@ async function fetchWeather(city) {
             loadAnimation(false);
             return data;
         } else {
-            console.log("Data from api")
+            console.log("Data from api");
             dateTime = await calculateDateTime(data);
             data['name'] = workingInCity;
             data['sys']['sunrise'] = dateTime["sunrise"].split(',')[1];
@@ -221,10 +221,77 @@ async function sendDataToDatabase(data){
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
-    })
+    });
     let phpRes = await res.json();
     if (phpRes.success != true) {
         alert("Problem while logging data to the database");
+    }
+}
+
+async function ifOnline(){
+    // If connected to internet
+    if (navigator.onLine) {
+        // Get previous data for the city from local storage
+        localData = JSON.parse(localStorage.getItem(workingInCity));
+        // If no local storage data, get data from api
+        if (localData == null) {
+            // Start this after 2 seconds of the triggered(wait for geolocation)
+            setTimeout(async () => {
+                if (triggeredBy == "currentLocation" && currentCity == "") {
+                    setCustomEventListeners(true);
+                    return
+                } else {
+                    let data = await parseData(workingInCity, await fetchWeather(workingInCity));
+                    // Handles if device is connected in a newtwork
+                    if (data != undefined) {
+                        if (data.cod == 200) {
+                            localStorage.setItem(workingInCity, JSON.stringify(data));
+                            sendDataToDatabase(data);
+                            toggleHistory(true);
+                        }
+                    }
+
+                }
+            }, 2000);
+        }
+        // If found data in local storage
+        else {
+            let today = new Date().toLocaleDateString('en-US');
+            // If same date
+            if (today == localData["date"]) {
+                console.log("Data from local storage");
+                await parseData(workingInCity, localData);
+            }
+            // If not same date
+            else {
+                let data = await parseData(workingInCity, await fetchWeather(workingInCity));
+                localStorage.setItem(workingInCity, JSON.stringify(data));
+                sendDataToDatabase(data);
+                toggleHistory(true);
+            }
+        }
+    }
+    // If not connected to internet
+    else {
+        localData = JSON.parse(localStorage.getItem(workingInCity));
+        // If no previous data for the city from local storage
+        if (localData == null) {
+            loadAnimation(false);
+            document.querySelector(".currentDay").textContent = `Sorry, ${workingInCity} city data not available`;
+            // Start this after 2 seconds of the triggered(wait for geolocation)
+            setTimeout(async () => {
+                if (triggeredBy == "currentLocation" && currentCity == "") {
+                    setCustomEventListeners(true);
+                    return
+                }
+            }, 2000);
+        }
+        // If previous data for the city from local storage
+        else {
+            console.log("Data from local storage");
+            await parseData(workingInCity, localData);
+            toggleHistory(true);
+        }
     }
 }
 
@@ -265,71 +332,8 @@ async function triggerForLocation(event) {
             workingInCity = currentCity;
         }
     }
-    console.log(workingInCity)
-    // If connected to internet
-    if (navigator.onLine){
-        // Get previous data for the city from local storage
-        localData = JSON.parse(localStorage.getItem(workingInCity));
-        // If no local storage data, get data from api
-        if (localData == null){
-            // Start this after 2 seconds of the triggered(wait for geolocation)
-            setTimeout(async () => {
-                if (triggeredBy == "currentLocation" && currentCity == "") {
-                    setCustomEventListeners(true);
-                    return
-                } else {
-                    let data = await parseData(workingInCity, await fetchWeather(workingInCity));
-                    // Handles if device is connected in a newtwork
-                    if (data != undefined){
-                        if (data.cod == 200) {
-                            localStorage.setItem(workingInCity, JSON.stringify(data));
-                            sendDataToDatabase(data);
-                            toggleHistory(true);
-                        }
-                    }
-                    
-                }
-            }, 2000);
-        }
-        // If found data in local storage
-        else {
-            let today = new Date().toLocaleDateString('en-US');
-            // If same date
-            if (today == localData["date"]){
-                console.log("Data from local storage");
-                await parseData(workingInCity, localData);
-            }
-            // If not same date
-            else{
-                let data = await parseData(workingInCity, await fetchWeather(workingInCity));
-                localStorage.setItem(workingInCity, JSON.stringify(data));
-                sendDataToDatabase(data);
-                toggleHistory(true);
-            }
-        }
-    }
-    // If not connected to internet
-    else {
-        localData = JSON.parse(localStorage.getItem(workingInCity));
-        // If no previous data for the city from local storage
-        if (localData == null) {
-            loadAnimation(false);
-            document.querySelector(".currentDay").textContent = `Sorry, ${workingInCity} city data not available`;
-            // Start this after 2 seconds of the triggered(wait for geolocation)
-            setTimeout(async () => {
-                if (triggeredBy == "currentLocation" && currentCity == "") {
-                    setCustomEventListeners(true);
-                    return
-                }
-            }, 2000);  
-        }
-        // If previous data for the city from local storage
-        else {
-            console.log("Data from local storage");
-            await parseData(workingInCity, localData);
-            toggleHistory(true);
-        }
-    }
+    console.log(workingInCity);
+    ifOnline();
 }
 
 // Toggles history button

@@ -26,7 +26,7 @@ function generateHTMLMarkup(data){
                 <p>Sunset: ${day.sunset}</p>
                 <p>Time Accessed: ${day.time_accessed}</p>                    
             `;
-        })
+        });
     }
 }
 
@@ -42,17 +42,17 @@ function setColor(){
 
 // This function fetches data from php
 async function fetchData(city){
-	const data = {"city": city}
+	const data = {"city": city};
     let res = await fetch("./php/select.php", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(data) 
-    })
+    });
     let phpRes = await res.json();
     console.log("Data from database");
-    return phpRes
+    return phpRes;
 }
 
 // This function gets city name from url
@@ -60,7 +60,6 @@ function getParams ()
 {
     var result = {};
     var tmp = [];
-
     location.search
         .substr (1)
         .split ("&")
@@ -83,7 +82,7 @@ async function afterLoad(){
     });
     city = location.getParams();
     const data = await fetchData(city);
-    generateHTMLMarkup(data)
+    generateHTMLMarkup(data);
 }
 
 afterLoad();
