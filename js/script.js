@@ -214,6 +214,7 @@ async function getCurrentLocation() {
     }
 }
 
+// This function sends data to database
 async function sendDataToDatabase(data){
     let res = await fetch("./php/insert.php", {
         method: 'POST',
@@ -228,6 +229,7 @@ async function sendDataToDatabase(data){
     }
 }
 
+// This function checks if device is connected to internet or not
 async function ifOnline(){
     // If connected to internet
     if (navigator.onLine) {
