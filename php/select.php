@@ -16,13 +16,11 @@
 	        }
 	        $city = $data['city'];
 			// SQL query
-			$query = "SELECT 
-					MAX(id) as id, city, country, temperature, weather_condition, humidity, pressure, wind, sunrise, sunset,
-					MAX(time_accessed) AS time_accessed, day_accessed, MAX(date_accessed) AS date_accessed, icon
+			$query = "SELECT *
 				FROM 
 					weather
 				WHERE 
-					city = '$city' AND date_accessed >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+					city = '$city' AND date_accessed BETWEEN CURDATE() - INTERVAL 6 DAY AND CURDATE()
 				GROUP BY 
 					DATE(date_accessed)
 				ORDER BY 
