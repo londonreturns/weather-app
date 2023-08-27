@@ -231,10 +231,10 @@ async function sendDataToDatabase(data){
 
 // This function checks if device is connected to internet or not
 async function ifOnline(){
+    // Get previous data for the city from local storage
+    localData = JSON.parse(localStorage.getItem(workingInCity));
     // If connected to internet
     if (navigator.onLine) {
-        // Get previous data for the city from local storage
-        localData = JSON.parse(localStorage.getItem(workingInCity));
         // If no local storage data, get data from api
         if (localData == null) {
             // Start this after 2 seconds of the triggered(wait for geolocation)
@@ -252,7 +252,6 @@ async function ifOnline(){
                             toggleHistory(true);
                         }
                     }
-
                 }
             }, 2000);
         }
@@ -275,7 +274,6 @@ async function ifOnline(){
     }
     // If not connected to internet
     else {
-        localData = JSON.parse(localStorage.getItem(workingInCity));
         // If no previous data for the city from local storage
         if (localData == null) {
             loadAnimation(false);
