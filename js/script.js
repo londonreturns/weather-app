@@ -230,7 +230,7 @@ async function sendDataToDatabase(data){
 }
 
 // This function checks if device is connected to internet or not
-async function ifOnline(workingInCity){
+async function ifOnline(triggeredBy){
     // Get previous data for the city from local storage
     localData = JSON.parse(localStorage.getItem(workingInCity));
     // If connected to internet
@@ -333,7 +333,7 @@ async function triggerForLocation(event) {
         }
     }
     console.log(workingInCity);
-    ifOnline(workingInCity);
+    ifOnline(triggeredBy);
 }
 
 // Toggles history button
